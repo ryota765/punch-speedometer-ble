@@ -1,15 +1,14 @@
 #include <Arduino_LSM9DS1.h>
 #include <ArduinoBLE.h>
 
-#define SERVICE_UUID   "050332B1-7E59-4B01-B359-352779E72BD9"
+#define SERVICE_UUID   "050332B0-7E59-4B01-B359-352779E72BD9"
+#define CHAR_UUID      "050332B1-7E59-4B01-B359-352779E72BD9"
 #define BLE_LOCAL_NAME "speedometer"
 
 const int ledPin = LED_BUILTIN; // pin to use for the LED
 
 BLEService bleService(SERVICE_UUID);
-BLEFloatCharacteristic xAxisCharacteristic(SERVICE_UUID, BLERead | BLEWrite);
-BLEFloatCharacteristic yAxisCharacteristic(SERVICE_UUID, BLERead | BLEWrite);
-BLEFloatCharacteristic zAxisCharacteristic(SERVICE_UUID, BLERead | BLEWrite);
+BLEStringCharacteristic accCharacteristic(CHAR_UUID, BLERead | BLEWrite | BLENotify, 16);
 
 void setup() {
   Serial.begin(9600);
@@ -45,17 +44,13 @@ void setup() {
   BLE.setAdvertisedService(bleService);
 
   // add the characteristic to the service
-  bleService.addCharacteristic(xAxisCharacteristic);
-  bleService.addCharacteristic(yAxisCharacteristic);
-  bleService.addCharacteristic(zAxisCharacteristic);
+  bleService.addCharacteristic(accCharacteristic);
 
   // add service
   BLE.addService(bleService);
 
   // set the initial value for the characeristic:
-  xAxisCharacteristic.writeValue(0);
-  yAxisCharacteristic.writeValue(0);
-  zAxisCharacteristic.writeValue(0);
+  accCharacteristic.writeValue("init");
 
   // start advertising
   BLE.advertise();
@@ -66,17 +61,29 @@ void setup() {
 void loop() {
   float x, y, z;
 
-  if (IMU.accelerationAvailable()) {
-    IMU.readAcceleration(x, y, z);
+  // listen for Bluetooth® Low Energy peripherals to connect:
+  BLEDevice central = BLE.central();
 
-    Serial.print(x);
-    Serial.print('\t');
-    Serial.print(y);
-    Serial.print('\t');
-    Serial.println(z);
+  // if a central is connected to peripheral:
+  if (central) {
+    Serial.print("Connected to central: ");
+    // print the central's MAC address:
+    Serial.println(central.address());
 
-    xAxisCharacteristic.writeValue(x);
-    yAxisCharacteristic.writeValue(y);
-    zAxisCharacteristic.writeValue(z);
+    // while the central is still connected to peripheral:
+    while (central.connected()) {
+      if (IMU.accelerationAvailable()) {
+        IMU.readAcceleration(x, y, z);
+        String accConcatStr = String(x) + "," + String(y) + "," + String(z);
+    
+        Serial.println(accConcatStr);
+
+        accCharacteristic.writeValue(accConcatStr);
+      }
+    }
+
+    // when the central disconnects, print it out:
+    Serial.print(F("Disconnected from central: "));
+    Serial.println(central.address());
   }
 }
