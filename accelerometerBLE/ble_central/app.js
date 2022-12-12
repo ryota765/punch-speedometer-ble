@@ -3,6 +3,9 @@
 const nodeplotlib = require("nodeplotlib");
 const noble = require("@abandonware/noble");
 const rxjs = require("rxjs");
+const keypress = require("keypress");
+const fs = require("fs");
+const stringifySync = require("csv-stringify/sync");
 
 const serviceUuid = `050332b07e594b01b359352779e72bd9`;
 const localName = `speedometer`;
@@ -104,6 +107,28 @@ const scanStart = () => {
   noble.startScanning();
   noble.on("discover", discovered);
 };
+
+keypress(process.stdin);
+
+process.stdin.on("keypress", function (ch, key) {
+  console.log("user is typing...", ch, key);
+
+  if (key && key.ctrl && key.name == "c") {
+    console.log("shutdown");
+    process.exit(0);
+  }
+
+  if (key && key.name == "s") {
+    console.log("save csv");
+    const csvString = stringifySync.stringify(dataArray, {
+      header: false,
+    });
+    fs.writeFileSync('output/dataArray.csv', csvString);
+  }
+});
+
+process.stdin.setRawMode(true);
+process.stdin.resume();
 
 if (noble.state === "poweredOn") {
   scanStart();
