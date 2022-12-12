@@ -11,6 +11,7 @@
   "description": "",
   "dependencies": {
     "@abandonware/noble": "^1.9.2-15",
+    "keypress": "^0.2.1",
     "nodeplotlib": "^1.1.2",
     "rxjs": "^7.6.0"
   }
