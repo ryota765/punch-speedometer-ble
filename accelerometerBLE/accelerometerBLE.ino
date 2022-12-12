@@ -8,7 +8,7 @@
 const int ledPin = LED_BUILTIN; // pin to use for the LED
 
 BLEService bleService(SERVICE_UUID);
-BLEStringCharacteristic accCharacteristic(CHAR_UUID, BLERead | BLENotify, 16);
+BLEStringCharacteristic accCharacteristic(CHAR_UUID, BLERead | BLENotify, 24);
 
 void setup() {
 
@@ -55,7 +55,9 @@ void loop() {
     while (central.connected()) {
       if (IMU.accelerationAvailable()) {
         IMU.readAcceleration(x, y, z);
-        String accConcatStr = String(x) + "," + String(y) + "," + String(z);
+        int elapsedTime = millis();
+        
+        String accConcatStr = String(x) + "," + String(y) + "," + String(z) + "," + String(elapsedTime);
 
         accCharacteristic.writeValue(accConcatStr);
       }
