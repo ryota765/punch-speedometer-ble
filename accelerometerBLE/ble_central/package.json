@@ -10,6 +10,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@abandonware/noble": "^1.9.2-15"
+    "@abandonware/noble": "^1.9.2-15",
+    "nodeplotlib": "^1.1.2"
   }
 }
