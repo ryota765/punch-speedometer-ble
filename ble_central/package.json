@@ -1,0 +1,20 @@
+{
+  "name": "ble_central",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@abandonware/noble": "^1.9.2-15",
+    "csv-stringify": "^6.2.3",
+    "iconv-lite": "^0.6.3",
+    "keypress": "^0.2.1",
+    "nodeplotlib": "^1.1.2",
+    "rxjs": "^7.6.0"
+  }
+}
