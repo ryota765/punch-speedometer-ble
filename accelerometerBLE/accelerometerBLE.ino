@@ -15,6 +15,8 @@ void setup() {
   // set LED pin to output mode
   pinMode(ledPin, OUTPUT);
 
+  IMU.settings.accel.scale = 16;
+
   if (!IMU.begin()) {
     while (1);
   }
