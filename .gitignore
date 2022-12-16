@@ -1,1 +1,2 @@
-ble_central/output/*.csv
+ble_central/output/*
+.ipynb_checkpoints/*
